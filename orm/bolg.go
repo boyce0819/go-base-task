@@ -89,9 +89,9 @@ func printPostsWithComments(posts []Post) {
 func selectCommentBest(db *gorm.DB) {
 	// "select * from posts where id = select posts_id from comments order by CommentCount desc limit 1"
 	var post Post
-	err := db.Raw(`SELECT a.* FROM posts a JOIN (
+	db.Raw(`SELECT a.* FROM posts a JOIN (
 	      SELECT post_id , COUNT(*) as comment_count  GROUP BY post_id ORDER BY comment_count desc LIMIT 1 ) as  b
-	     on a.id = b.post_id`).Scan(&post).Error
+	     on a.id = b.post_id`).Scan(&post)
 }
 
 // AfterCreate 题目3：钩子函数
