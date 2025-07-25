@@ -1,5 +1,13 @@
 package main
 
+import (
+	"fmt"
+	"go-task1/orm"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
+	"time"
+)
+
 func main() {
 	//TIP <p>Press <shortcut actionId="ShowIntentionActions"/> when your caret is at the underlined text
 	// to see how GoLand suggests fixing the warning.</p><p>Alternatively, if available, click the lightbulb to view possible fixes.</p>
@@ -67,8 +75,45 @@ func main() {
 	//锁机制
 	//题目 ：编写一个程序，使用 sync.Mutex 来保护一个共享的计数器。启动10个协程，每个协程对计数器进行1000次递增操作，最后输出计数器的值。
 	//考察点 ： sync.Mutex 的使用、并发数据安全。
-	doInc()
+	//doInc()
 	//题目 ：使用原子操作（ sync/atomic 包）实现一个无锁的计数器。启动10个协程，每个协程对计数器进行1000次递增操作，最后输出计数器的值。
 	//考察点 ：原子操作、并发数据安全。
 	// 	//atomic.AddInt64(&c.value, 1) 修改inc 方法，使用工具包atomic AddInt64  返回的value 值也用atomic 包一下
+
+	/*gorm----------------------------------------------------------------------*/
+	// MySQL 连接配置
+	//orm.RunDb(dbInit())
+	// 测试 RunStudent
+	//orm.RunStudent(dbInit())
+	//orm.InitData(dbInit())
+	//orm.EmployeesSelect(dbInit())
+	//orm.BookSelect(dbInit())
+	/*---------------------------------bolg-------------------------------------*/
+	//orm.InitTable(dbInit())
+	//orm.InitTable(dbInit())
+	orm.SelectUserAllPostAndComment(dbInit(), 1)
+}
+
+func dbInit() *gorm.DB {
+	dsn := "root:root@tcp(127.0.0.1:3306)/gorm?charset=utf8mb4&parseTime=True&loc=Local"
+	// 打开数据库连接
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
+		//Logger: logger.Default.LogMode(logger.Info), // 打印所有SQL
+	})
+	if err != nil {
+		panic("failed to connect database")
+	}
+	fmt.Println("Database connection established")
+	// 开启Debug模式（会打印所有SQL）
+	db = db.Debug()
+	// 获取底层 sql.DB 对象进行连接池配置
+	sqlDB, err := db.DB()
+	if err != nil {
+		panic("failed to get underlying sql.DB")
+	}
+	// 配置连接池
+	sqlDB.SetMaxIdleConns(10)           // 最大空闲连接数
+	sqlDB.SetMaxOpenConns(100)          // 最大打开连接数
+	sqlDB.SetConnMaxLifetime(time.Hour) // 连接最大存活时间
+	return db
 }
