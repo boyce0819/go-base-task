@@ -2,7 +2,8 @@ package main
 
 import (
 	"fmt"
-	"go-task1/orm"
+	"go-task1/bolg/config"
+	"go-task1/bolg/routes"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"time"
@@ -91,7 +92,10 @@ func main() {
 	/*---------------------------------bolg-------------------------------------*/
 	//orm.InitTable(dbInit())
 	//orm.InitTable(dbInit())
-	orm.SelectUserAllPostAndComment(dbInit(), 1)
+	//orm.SelectUserAllPostAndComment(dbInit(), 1)
+	config.DbInit()              // 初始化db
+	router := routes.ApiRouter() // 初始化路由
+	_ = router.Run(":8080")      // 启动服务
 }
 
 func dbInit() *gorm.DB {
